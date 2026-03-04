@@ -53,7 +53,6 @@ function App() {
 
     const fileType = file.type;
 
-    // TXT
     if (fileType === "text/plain") {
       const reader = new FileReader();
       reader.onload = (event) => processText(event.target.result);
@@ -61,7 +60,6 @@ function App() {
       return;
     }
 
-    // PDF
     if (fileType === "application/pdf") {
       const reader = new FileReader();
 
@@ -75,7 +73,7 @@ function App() {
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const content = await page.getTextContent();
-            const strings = content.items.map(item => item.str);
+            const strings = content.items.map((item) => item.str);
             fullText += strings.join(" ") + " ";
           }
 
@@ -97,7 +95,9 @@ function App() {
     const handleVisibility = () => {
       if (document.hidden) setIsPlaying(false);
     };
+
     document.addEventListener("visibilitychange", handleVisibility);
+
     return () =>
       document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
@@ -105,8 +105,7 @@ function App() {
   useEffect(() => {
     if (!isPlaying || words.length === 0) return;
 
-    if (!startTimeRef.current)
-      startTimeRef.current = Date.now();
+    if (!startTimeRef.current) startTimeRef.current = Date.now();
 
     const currentWord = words[index];
     let delay = 60000 / speed;
@@ -121,8 +120,7 @@ function App() {
           return prev + 1;
         } else {
           setIsPlaying(false);
-          const totalTime =
-            (Date.now() - startTimeRef.current) / 1000;
+          const totalTime = (Date.now() - startTimeRef.current) / 1000;
           setSessionTime(totalTime);
           setShowStats(true);
           startTimeRef.current = null;
@@ -136,14 +134,12 @@ function App() {
 
   function highlightWord(word) {
     if (!word) return "";
-    const pivot = Math.round(word.length * 0.35);
+    const pivot = Math.min(Math.round(word.length * 0.35), word.length - 1);
 
     return (
       <>
         {word.slice(0, pivot)}
-        <span style={{ color: "red" }}>
-          {word[pivot]}
-        </span>
+        <span style={{ color: "red" }}>{word[pivot]}</span>
         {word.slice(pivot + 1)}
       </>
     );
@@ -161,10 +157,8 @@ function App() {
         background:
           "linear-gradient(-45deg, #0f172a, #1e293b, #111827, #1f2937)",
         backgroundSize: "400% 400%",
-        animation: bgAnimated
-          ? "gradientMove 15s ease infinite"
-          : "none",
-        color: "#e2e8f0"
+        animation: bgAnimated ? "gradientMove 15s ease infinite" : "none",
+        color: "#e2e8f0",
       }}
     >
       <style>{animationStyles}</style>
@@ -176,11 +170,16 @@ function App() {
           padding: "40px",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
-        {/* BRAND TITLE */}
-        <h1 style={{ fontSize: "36px", fontWeight: "bold", letterSpacing: "3px" }}>
+        <h1
+          style={{
+            fontSize: "36px",
+            fontWeight: "bold",
+            letterSpacing: "3px",
+          }}
+        >
           Red <span style={{ color: "red" }}>A</span>nchor
         </h1>
 
@@ -210,20 +209,19 @@ function App() {
             justifyContent: "center",
             borderTop: "2px solid #334155",
             borderBottom: "2px solid #334155",
-            marginTop: "40px"
+            marginTop: "40px",
           }}
         >
-          <div
-            key={index}
-            style={{ animation: "fadeIn 0.25s ease-in-out" }}
-          >
+          <div key={index} style={{ animation: "fadeIn 0.25s ease-in-out" }}>
             {highlightWord(words[index])}
           </div>
         </div>
 
         {words.length > 0 && (
           <>
-            <p>{index + 1} / {words.length}</p>
+            <p>
+              {index + 1} / {words.length}
+            </p>
 
             <input
               type="range"
@@ -239,15 +237,27 @@ function App() {
           </>
         )}
 
+        {/* SPEED CONTROL */}
+        <div style={{ marginTop: "20px", width: "100%", maxWidth: "400px" }}>
+          <input
+            type="range"
+            min="100"
+            max="800"
+            step="10"
+            value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            style={{ width: "100%" }}
+          />
+          <p style={{ textAlign: "center" }}>{speed} WPM</p>
+        </div>
+
         <div style={{ marginTop: "20px" }}>
           <button onClick={() => setIsPlaying(!isPlaying)}>
             {isPlaying ? "Pause" : "Start"}
           </button>
 
           <button
-            onClick={() =>
-              setIndex((prev) => Math.max(prev - 1, 0))
-            }
+            onClick={() => setIndex((prev) => Math.max(prev - 1, 0))}
             style={{ marginLeft: "10px" }}
           >
             ⬅ Prev
@@ -255,9 +265,7 @@ function App() {
 
           <button
             onClick={() =>
-              setIndex((prev) =>
-                Math.min(prev + 1, words.length - 1)
-              )
+              setIndex((prev) => Math.min(prev + 1, words.length - 1))
             }
             style={{ marginLeft: "10px" }}
           >
